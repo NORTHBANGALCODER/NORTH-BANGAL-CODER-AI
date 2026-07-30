@@ -15,13 +15,21 @@ export default async function handler(req, res) {
       })
     });
 
-    const data = await response.json();
+    const text = await response.text();
 
-    return res.status(response.status).json(data);
+    try {
+      const json = JSON.parse(text);
+      return res.status(response.status).json(json);
+    } catch {
+      return res.status(response.status).json({
+        error: text
+      });
+    }
 
-  } catch (error) {
+  } catch (err) {
     return res.status(500).json({
-      error: error.message
+      error: err.message,
+      stack: err.stack
     });
   }
 }
